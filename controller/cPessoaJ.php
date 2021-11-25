@@ -11,7 +11,7 @@
  *
  * @author jairb
  */
-require_once './model/pessoaJ.php';
+require_once '../model/pessoaJ.php';
 class cPessoaJ {
     //put your code here
     
@@ -41,8 +41,30 @@ class cPessoaJ {
         $this->addPessoaJ($pj2);
     }
     
-    public function getAllPJ() {
-        return $this->pj;
+     public function getAllPJ() {
+        
+        $_REQUEST['pjs'] = $this->pj;
+        $this->getAllBD();
+        require_once '../view/listPessoaJ.php';
+    }
+    
+    public function imprime() {
+        foreach ($this->pj as $pj):
+            echo $pj;
+        endforeach;
+    }
+    
+       public function inserir() {
+        if (isset($_POST['salvarPJ'])) {
+            $pf = new pessoaJ();
+            $pf->setNome($_POST['nome']);
+            $pf->setTelefone($_POST['telefone']);
+            $pf->setEmail($_POST['email']);
+            $pf->setEndereco($_POST['endereco']);
+            $pf->setCnpj($_POST['cnpj']);
+            $pf->setNomeFantasia($_POST['nomeFantasia']);
+            $this->addPessoaJ($pj);
+        }
     }
     
     public function addPessoaJ($p) {
@@ -54,4 +76,58 @@ class cPessoaJ {
             echo $pj;
         }
     }
-}
+    
+    public function inserirBD() {
+        if (isset($_POST['salvarPJ'])) {
+            $host = 'localhost';
+            $user = 'root';
+            $pass = '';
+            $schema = 'dev3n201';
+            $conexao = mysqli_connect($host, $user, $pass, $schema);
+            if (!$conexao) {
+                die("Erro ao conectar. " . mysqli_error($conexao));
+            }
+        }
+
+            $Nome = $_POST['nome'];
+            $Telefone = $_POST['tel'];
+            $Email = $_POST['email'];
+            $Endereco = $_POST['endereco'];
+            $Cnpj = $_POST['cnpj'];
+            $NomeFantasia = $_POST['nomeFantasia'];
+
+            $sql = "insert into `pessoa` (`nome`, `telefone`, `email`, "
+                    . "`endereco`, `cnpj`, `nomeFantasia`) values ('$Nome','$Telefone',"
+                    . "'$Email','$Endereco','$Cnpj','$NomeFantasia')";
+            $result = mysqli_query($conexao, $sql);
+
+            if (!$result) {
+                die("Erro ao inserir. " . mysqli_error($conexao));
+            }
+            mysqli_close($conexao);
+        }
+        
+            public function getAllBD() {
+        $host = 'localhost';
+        $user = 'root';
+        $pass = '';
+        $schema = 'dev3n201';
+        $conexao = mysqli_connect($host, $user, $pass, $schema);
+        if (!$conexao) {
+            die("Erro ao conectar. " . mysqli_error($conexao));
+        }
+
+        $sql = "select * from pessoa where cpf is null";
+        $result = mysqli_query($conexao, $sql);
+        if ($result) {
+            $pjsBD = [];
+            while ($row = $result->fetch_assoc()) {
+                array_push($pjsBD, $row);
+            }
+            $_REQUEST['pjsBD'] = $pjsBD;
+        } else {
+            $_REQUEST['pjsBD'] = 0;
+        }
+        mysqli_close($conexao);
+    }
+    }

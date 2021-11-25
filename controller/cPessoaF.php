@@ -147,61 +147,34 @@ class cPessoaF {
             mysqli_close($conexao);
             header('Refresh: 0'); //recarregar a pág. F5 em 0 segundos
         }
-        //Atualizar Pessoa
-        if (isset($_POST['update'])) {
-            $id = $_POST['id'];
-            $host = 'localhost';
-            $user = 'root';
-            $pass = '';
-            $schema = 'dev3n201';
-            $conexao = mysqli_connect($host, $user, $pass, $schema);
-            if (!$conexao) {
-                die("Erro ao conectar. " . mysqli_error($conexao));
-            }
+    }
 
-            $sql = "select * from pessoa where idPessoa=$id";
-            $result = mysqli_query($conexao, $sql);
-            if ($result) {
-                $pfsBD = [];
-                while ($row = $result->fetch_assoc()) {
-                    array_push($pfsBD, $row);
-                }
-                $_REQUEST['pfUpdate'] = $pfsBD;
-            } else {
-                $_REQUEST['pfUpdate'] = 0;
-            }
-            mysqli_close($conexao);
-            require_once '../view/editPessoaF.php';
+    public function getPessoaById($id) {
+        //Atualizar Pessoa
+        $host = 'localhost';
+        $user = 'root';
+        $pass = '';
+        $schema = 'dev3n201';
+        $conexao = mysqli_connect($host, $user, $pass, $schema);
+        if (!$conexao) {
+            die("Erro ao conectar. " . mysqli_error($conexao));
         }
+
+        $sql = "select * from pessoa where idPessoa=$id";
+        $result = mysqli_query($conexao, $sql);
+        if ($result) {
+            $pfsBD = [];
+            while ($row = $result->fetch_assoc()) {
+                array_push($pfsBD, $row);
+            }
+            return $pfsBD;
+        } 
+        mysqli_close($conexao);
     }
     
-    public function getPessoaByID($id){
-             
-            $id = $_POST['id'];
-            $host = 'localhost';
-            $user = 'root';
-            $pass = '';
-            $schema = 'dev3n201';
-            $conexao = mysqli_connect($host, $user, $pass, $schema);
-            if (!$conexao) {
-                die("Erro ao conectar. " . mysqli_error($conexao));
-            }
-
-            $sql = "select * from pessoa where idPessoa=$id";
-            $result = mysqli_query($conexao, $sql);
-            if ($result) {
-                $pfsBD = [];
-                while ($row = $result->fetch_assoc()) {
-                    array_push($pfsBD, $row);
-                }
-                return  $pfsBD;
-            } 
-            mysqli_close($conexao);  
-    }
-
     public function update() {
         if(isset($_POST['updatePF'])){
-                        $host = 'localhost';
+            $host = 'localhost';
             $user = 'root';
             $pass = '';
             $schema = 'dev3n201';
@@ -217,18 +190,19 @@ class cPessoaF {
             $Cpf = $_POST['cpf'];
             $Sexo = $_POST['sexo'];
             
-            $sql = "UPDATE `pessoa` SET `nome`='$Nome',`telefone`='$Telefone',`email`='$Email',`endereco`=[value-5],`cpf`='$Cpf',`sexo`='$Sexo', WHERE `idPessoa`='$idPessoa'";
-        
-            $result = mysql_query($conexao, $sql);
-                if (!$result){
-                    die("Erro ao atualizar: " . mysqli_error($conexao));
-                }
-                mysqli_close($conexao);
-                header('Location:../view/gerPessoaF.php'); //retorna a página de cadastro
+            $sql = "UPDATE `pessoa` SET `nome`='$Nome',`telefone`='$Telefone',"
+                    . "`email`='$Email',`endereco`='$Endereco',`cpf`='$Cpf',"
+                    . "`sexo`='$Sexo' WHERE `idPessoa`='$idPessoa'";
+            $result = mysqli_query($conexao, $sql);
+            if(!$result){
+                die("Erro ao atualizar pessoa. " . mysqli_error($conexao));
             }
-        
+            mysqli_close($conexao);
+            header('Location: ../view/gerPessoaF.php');
+        }
+        if(isset($_POST['cancelar'])){
+            header('Location: ../view/gerPessoaF.php');
+        }
     }
-    
 
-    
 }
